@@ -1,10 +1,12 @@
 from flask import Flask, render_template, request
 import pickle
+import os
 
 app = Flask(__name__)
 
-model = pickle.load(open('model.pkl', 'rb'))
-tfidf_vectorizer = pickle.load(open('vectorizer.pkl', 'rb'))
+# Load models using relative paths
+model = pickle.load(open(os.path.join(os.path.dirname(__file__), 'model.pkl'), 'rb'))
+tfidf_vectorizer = pickle.load(open(os.path.join(os.path.dirname(__file__), 'vectorizer.pkl'), 'rb'))
 
 def detect(input_text):
     vectorized_text = tfidf_vectorizer.transform([input_text])
@@ -22,5 +24,5 @@ def detect_plagiarism():
     return render_template('index.html', result=detection_result)
 
 if __name__ == "__main__":
-    app.run(debug=True)
-    
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host='0.0.0.0', port=port)
